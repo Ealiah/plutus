@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLUTUS · Marketing & Production Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&display=swap" rel="stylesheet">
+  <style>
+    /* ── Tokens ─────────────────────────────────────────────── */
+    :root {
+      --bg:         #0c0a07;
+      --text:       #f0ece3;
+      --muted:      rgba(240,236,227,0.48);
+      --gold:       #d4a017;
+      --gold-dim:   rgba(212,160,23,0.12);
+      --gold-glow:  rgba(212,160,23,0.22);
+      --nav-bg:     rgba(12,10,7,0.72);
+      --card:       #16130c;
+      --border:     rgba(240,236,227,0.07);
+      --dot:        rgba(212,160,23,0.22);
+    }
+    [data-theme="light"] {
+      --bg:         #f3ede1;
+      --text:       #1a1714;
+      --muted:      rgba(26,23,20,0.5);
+      --gold:       #a8780f;
+      --gold-dim:   rgba(168,120,15,0.12);
+      --gold-glow:  rgba(168,120,15,0.2);
+      --nav-bg:     rgba(243,237,225,0.80);
+      --card:       #e6e0d4;
+      --border:     rgba(26,23,20,0.09);
+      --dot:        rgba(168,120,15,0.28);
+    }
+
+    /* ── Reset ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      scroll-behavior: smooth;
+      overflow-x: clip;
+    }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: clip;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* Dot grid with fade-center mask */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+      background-size: 26px 26px;
+      mask-image: radial-gradient(ellipse at center, transparent 30%, var(--bg) 100%);
+      -webkit-mask-image: radial-gradient(ellipse at center, transparent 30%, var(--bg) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Curtain overlay ────────────────────────────────────── */
+    #curtain {
+      position: fixed; inset: 0;
+      transform-origin: top;
+      transform: scaleY(0);
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    /* ── Navigation ─────────────────────────────────────────── */
+    body > nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      height: 68px;
+      padding: 0 2.5rem;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.4s ease, border-color 0.4s ease;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      justify-self: start;
+    }
+    .nav-logo img {
+      height: 28px;
+      width: auto;
+    }
+    .nav-logo-text {
+      font-size: 0.875rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text);
+      transition: color 0.4s;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.75rem;
+      list-style: none;
+    }
+    .nav-link {
+      text-decoration: none;
+      overflow: hidden;
+      height: 1.15em;
+      display: block;
+    }
+    .nav-link-inner {
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.32s cubic-bezier(0.34,1.2,0.64,1);
+    }
+    .nav-link-inner span {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: var(--muted);
+      line-height: 1.15;
+      transition: color 0.25s;
+    }
+    .nav-link-inner span:last-child {
+      color: var(--text);
+    }
+    .nav-link:hover .nav-link-inner { transform: translateY(-1.15em); }
+    .nav-link-gold .nav-link-inner span,
+    .nav-link-gold .nav-link-inner span:last-child {
+      color: var(--gold);
+    }
+    .nav-link-gold:hover .nav-link-inner span:last-child { color: var(--gold); filter: brightness(1.15); }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    #themeToggle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.35s, color 0.35s, border-color 0.35s, transform 0.15s;
+      outline: none;
+    }
+    #themeToggle:hover  { transform: scale(1.12); }
+    #themeToggle:active { transform: scale(0.92); }
+    #themeToggle svg { width: 15px; height: 15px; display: block; pointer-events: none; }
+
+    /* Mobile-only inline CTA: keeps the destination one tap away when nav-links collapse */
+    .nav-cta-mobile {
+      display: none;
+      padding: 0.5rem 0.875rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      transition: background 0.25s, border-color 0.25s, color 0.25s;
+      white-space: nowrap;
+    }
+    .nav-cta-mobile:hover,
+    .nav-cta-mobile:active {
+      background: var(--gold-dim);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── Hero ───────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 9rem 1.5rem 4rem;
+    }
+    .hero-glow {
+      position: absolute;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gold-glow) 0%, transparent 65%);
+      top: 40%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      position: relative;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      transition: color 0.4s;
+    }
+    .hero-headline {
+      position: relative;
+      font-size: clamp(4.5rem, 11vw, 9.5rem);
+      font-weight: 900;
+      line-height: 0.88;
+      letter-spacing: -0.04em;
+      margin-bottom: 2rem;
+    }
+    .hero-headline .solid  { display: block; color: var(--text); }
+    .hero-headline .outline {
+      display: block;
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--text);
+      opacity: 0.4;
+    }
+    .hero-body {
+      position: relative;
+      max-width: 42ch;
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── Book A Call button ──────────────────────────────────── */
+    .book-btn {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.875rem 2rem;
+      background: var(--gold);
+      color: #0c0a07;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px var(--gold-dim);
+    }
+    .book-btn:hover  { opacity: 0.88; transform: translateY(-2px); box-shadow: 0 8px 32px var(--gold-glow); }
+    .book-btn:active { transform: translateY(0); opacity: 1; }
+    /* In light mode the gold becomes muted enough that black ink loses its bite; flip to white for contrast. */
+    [data-theme="light"] .book-btn { color: #fff; }
+    .book-btn-icon {
+      position: relative;
+      width: 20px; height: 20px;
+      flex-shrink: 0;
+    }
+    .book-btn-icon svg {
+      position: absolute;
+      inset: 0;
+      width: 20px; height: 20px;
+      transition: transform 0.3s cubic-bezier(0.34,1.2,0.64,1), opacity 0.3s;
+    }
+    .book-btn-icon .icon-exit  { transform: translateY(0);   opacity: 1; }
+    .book-btn-icon .icon-enter { transform: translateY(20px); opacity: 0; }
+    .book-btn:hover .icon-exit  { transform: translateY(-20px); opacity: 0; }
+    .book-btn:hover .icon-enter { transform: translateY(0);      opacity: 1; }
+    .book-btn-text {
+      transition: transform 0.3s;
+    }
+    .book-btn:hover .book-btn-text { transform: translateX(3px); }
+    /* Shine sweep */
+    .book-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
+      transform: skewX(-12deg) translateX(-120%);
+      transition: transform 0s;
+    }
+    .book-btn:hover::after {
+      transform: skewX(-12deg) translateX(120%);
+      transition: transform 0.8s ease-out;
+    }
+
+    /* ── Orbital diagram ─────────────────────────────────────── */
+    .orbital-wrap {
+      position: relative;
+      width: 440px;
+      height: 440px;
+      margin: 4.5rem auto 0;
+      flex-shrink: 0;
+    }
+    .orbital-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    .orb-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 32%, #f0c040, #d4a017);
+      box-shadow: 0 0 0 16px var(--gold-dim), 0 0 60px var(--gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      animation: orb-pulse 3s ease-in-out infinite;
+    }
+    .orb-center img {
+      width: 58%;
+      height: 58%;
+      object-fit: contain;
+      /* Force the gold-on-transparent logo to render solid black so it sits on the gold disk */
+      filter: brightness(0);
+    }
+    @keyframes orb-pulse {
+      0%, 100% { box-shadow: 0 0 0 16px var(--gold-dim), 0 0 60px var(--gold-dim); }
+      50%       { box-shadow: 0 0 0 26px var(--gold-dim), 0 0 90px rgba(212,160,23,0.28); }
+    }
+    .orb-node {
+      position: absolute;
+      top: 50%; left: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      will-change: transform;
+      transition: opacity 0.35s;
+    }
+    .orb-dot {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      flex-shrink: 0;
+      color: var(--text);
+      transition: background 0.3s, border-color 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    .orb-node:hover .orb-dot {
+      border-color: var(--gold);
+      transform: scale(1.08);
+    }
+    .orb-node.active .orb-dot {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #0c0a07;
+      transform: scale(1.18);
+      box-shadow: 0 0 0 6px var(--gold-dim), 0 0 30px var(--gold-glow);
+    }
+    .orb-node.active .orb-label { color: var(--gold); }
+    .orb-label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+      transition: color 0.4s;
+      background: var(--bg);
+      padding: 0 3px;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    /* Orbital info card */
+    .orb-card {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 260px;
+      background: var(--card);
+      border: 1px solid var(--gold);
+      border-radius: 16px;
+      padding: 1.5rem 1.25rem 1.25rem;
+      z-index: 5;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.45), 0 0 40px var(--gold-dim);
+      transform: translate(-50%, -50%) scale(0.85);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .orb-card.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
+    }
+    .orb-card-cat {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.625rem;
+    }
+    .orb-card-title {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 0.625rem;
+      line-height: 1.2;
+    }
+    .orb-card-desc {
+      font-size: 0.78rem;
+      line-height: 1.6;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .orb-card-close {
+      position: absolute;
+      top: 10px; right: 12px;
+      width: 22px; height: 22px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .orb-card-close:hover { color: var(--text); background: var(--border); }
+    /* Center orb dims when card is open */
+    .orbital-wrap.card-open .orb-center {
+      opacity: 0.15;
+      transform: translate(-50%, -50%) scale(0.6);
+    }
+    .orb-center { transition: opacity 0.3s, transform 0.3s; }
+
+    /* ── Features section ───────────────────────────────────── */
+    .features {
+      position: relative;
+      z-index: 1;
+      padding: 6rem 1.5rem;
+      scroll-margin-top: 80px;
+    }
+    .features-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .features-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      transition: color 0.4s;
+    }
+    .features-heading {
+      font-size: clamp(2.5rem, 4.5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      line-height: 1.05;
+      transition: color 0.4s;
+    }
+    .features-sub {
+      max-width: 46ch;
+      margin: 1rem auto 0;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--muted);
+      transition: color 0.4s;
+    }
+    .features-grid {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .feat-card {
+      position: relative;
+      overflow: hidden;
+      padding: 2rem 1.75rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: transparent;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .feat-card:hover {
+      background: rgba(212,160,23,0.04);
+      border-color: rgba(212,160,23,0.25);
+    }
+    .feat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      margin-left: -80px;
+      width: 100%; height: 100%;
+      background: radial-gradient(farthest-side at top, rgba(212,160,23,0.07) 0%, transparent 100%);
+      mask-image: linear-gradient(white, transparent);
+      -webkit-mask-image: linear-gradient(white, transparent);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .feat-card:hover::before { opacity: 1; }
+    .feat-icon {
+      width: 24px; height: 24px;
+      color: var(--muted);
+      stroke-width: 1.25;
+      margin-bottom: 2.5rem;
+    }
+    .feat-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+      transition: color 0.4s;
+    }
+    .feat-desc {
+      font-size: 0.8125rem;
+      line-height: 1.65;
+      color: var(--muted);
+      font-weight: 400;
+      transition: color 0.4s;
+    }
+
+    /* ── Scroll section ─────────────────────────────────────── */
+    .scroll-section {
+      position: relative;
+      z-index: 1;
+      height: 80rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 1.5rem;
+    }
+    .scroll-inner { width: 100%; max-width: 960px; }
+    #scrollHeader {
+      text-align: center;
+      margin-bottom: 3.5rem;
+      will-change: transform;
+    }
+    .scroll-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      transition: color 0.4s;
+    }
+    .scroll-heading {
+      font-size: clamp(2.5rem, 4.5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      transition: color 0.4s;
+    }
+    .scroll-heading span {
+      display: block;
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--text);
+      opacity: 0.4;
+    }
+    .scroll-card-perspective { perspective: 1000px; }
+    #scrollCard {
+      max-width: 896px;
+      margin: 0 auto;
+      height: 38rem;
+      border: 2px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      background: #1c1c1e;
+      overflow: hidden;
+      transform-origin: 50% 0%;
+      transform: rotateX(20deg) scale(1.05);
+      will-change: transform;
+      box-shadow: 0 9px 20px rgba(0,0,0,0.35), 0 37px 37px rgba(0,0,0,0.28), 0 84px 50px rgba(0,0,0,0.16), 0 149px 60px rgba(0,0,0,0.06);
+    }
+
+    /* Dashboard inside card */
+    .dash-inner {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      height: 100%;
+      background: #111113;
+      border-radius: 26px;
+      overflow: hidden;
+    }
+    .dash-sidebar {
+      position: relative;
+      width: 196px;
+      min-width: 196px;
+      flex-shrink: 0;
+      flex-grow: 0;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 1.25rem;
+      overflow: hidden;
+    }
+    .dash-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .dash-orb {
+      width: 26px; height: 26px;
+      flex-shrink: 0;
+      object-fit: contain;
+    }
+    .dash-brand-name {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #ece8de;
+      text-transform: uppercase;
+    }
+    .dash-nav {
+      padding: 0 0.5rem;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .dash-item {
+      position: relative;
+      display: flex; align-items: center; gap: 10px;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.765rem; font-weight: 500;
+      color: rgba(236,232,222,0.5);
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+    .dash-item:hover { color: #ece8de; background: rgba(255,255,255,0.03); }
+    .dash-item.active { color: #ece8de; background: rgba(255,255,255,0.06); }
+    .dash-item.active::before {
+      content: '';
+      position: absolute;
+      left: -0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2px; height: 16px;
+      background: #d4a017;
+      border-radius: 0 2px 2px 0;
+    }
+    .dash-icon {
+      width: 14px; height: 14px;
+      flex-shrink: 0;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .dash-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: rgba(236,232,222,0.2); flex-shrink: 0;
+    }
+    .dash-item.active .dash-dot { background: #d4a017; }
+    .dash-badge {
+      margin: 1rem 1rem 0.6rem;
+      padding: 0.45rem 0.75rem;
+      background: rgba(212,160,23,0.1);
+      border: 1px solid rgba(212,160,23,0.22);
+      border-radius: 8px;
+      font-size: 0.65rem; font-weight: 700;
+      color: #d4a017; letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 7px;
+      align-self: flex-start;
+    }
+    .badge-pulse {
+      width: 6px; height: 6px; border-radius: 50%; background: #d4a017;
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.3; transform: scale(0.65); }
+    }
+    .dash-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .dash-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      flex-shrink: 0;
+    }
+    .dash-title { font-size: 0.9rem; font-weight: 700; color: #ece8de; letter-spacing: -0.01em; }
+    .dash-period {
+      font-size: 0.68rem; color: rgba(236,232,222,0.35);
+      background: rgba(255,255,255,0.05); padding: 0.3rem 0.75rem; border-radius: 20px;
+    }
+    .dash-kpis { display: flex; gap: 0.875rem; padding: 1rem 1.5rem; flex-shrink: 0; }
+    .kpi-card {
+      flex: 1; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 0.875rem 1rem;
+    }
+    .kpi-label { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(236,232,222,0.35); margin-bottom: 0.35rem; }
+    .kpi-val   { font-size: 1.35rem; font-weight: 800; color: #ece8de; letter-spacing: -0.025em; line-height: 1; }
+    .kpi-delta { font-size: 0.62rem; font-weight: 600; margin-top: 0.25rem; }
+    .kpi-delta.up   { color: #4ade80; }
+    .kpi-delta.gold { color: #d4a017; }
+    .dash-chart-wrap {
+      flex: 1; padding: 0 1.5rem;
+      display: flex; flex-direction: column; gap: 0.75rem; min-height: 0;
+    }
+    .dash-chart {
+      flex: 1; background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 0.875rem 1rem; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .dash-chart svg { flex: 1; width: 100%; min-height: 0; }
+    .chart-lbl { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(236,232,222,0.32); margin-bottom: 0.5rem; }
+    .chart-header {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 0.75rem; margin-bottom: 0.6rem;
+    }
+    .chart-header .chart-lbl { margin-bottom: 0; }
+    .chart-legend { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .leg-item {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.55rem; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      color: rgba(236,232,222,0.45); white-space: nowrap;
+    }
+    .leg-swatch { width: 10px; height: 2px; border-radius: 1px; flex-shrink: 0; }
+    .leg-swatch.s1 { background: #d4a017; }
+    .leg-swatch.s2 { background: rgba(212,160,23,0.6); }
+    .leg-swatch.s3 { background: rgba(212,160,23,0.35); }
+    .dash-feed { display: flex; flex-direction: column; gap: 0.5rem; padding-bottom: 1rem; flex-shrink: 0; }
+    .feed-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 0.5rem 0.875rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px; font-size: 0.68rem; color: rgba(236,232,222,0.52);
+    }
+    .feed-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Footer (Cinematic) ──────────────────────────────────── */
+    .footer-reveal {
+      position: relative;
+      height: 100vh;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+    footer {
+      position: fixed;
+      bottom: 0; left: 0;
+      width: 100%; height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+    .footer-grid-bg {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-size: 60px 60px;
+      background-image:
+        linear-gradient(to right, var(--border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+      mask-image: linear-gradient(to bottom, transparent, rgba(0,0,0,0.8) 30%, rgba(0,0,0,0.8) 70%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, rgba(0,0,0,0.8) 30%, rgba(0,0,0,0.8) 70%, transparent);
+    }
+    .footer-aurora {
+      position: absolute; left: 50%; top: 50%;
+      width: 80vw; height: 60vh;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      animation: footer-breathe 8s ease-in-out infinite alternate;
+      filter: blur(60px);
+      pointer-events: none; z-index: 0;
+    }
+    @keyframes footer-breathe {
+      0%   { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.12); }
+    }
+
+    /* Marquee */
+    .footer-marquee-wrap {
+      position: absolute; top: 2.5rem; left: 0; right: 0;
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 0.875rem 0;
+      transform: rotate(-1.5deg) scaleX(1.05);
+      z-index: 10;
+    }
+    .footer-marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee-scroll 35s linear infinite;
+    }
+    @keyframes marquee-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .footer-marquee-item {
+      display: flex; align-items: center; gap: 1.5rem;
+      padding: 0 2rem;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--muted); white-space: nowrap;
+    }
+    .footer-marquee-item .sep { color: var(--gold); font-size: 0.6rem; }
+
+    /* Giant bg text */
+    .footer-giant-text {
+      position: absolute;
+      bottom: -6vh; left: 50%;
+      transform: translateX(-50%);
+      font-size: 26vw;
+      line-height: 0.75;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      white-space: nowrap;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--border);
+      background: linear-gradient(180deg, var(--muted) 0%, transparent 60%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      pointer-events: none; z-index: 0; user-select: none;
+    }
+
+    /* Footer center */
+    .footer-center {
+      position: relative; z-index: 10;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      flex: 1;
+      padding: 0 2rem;
+      margin-top: 7rem;
+    }
+    .footer-heading {
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      text-align: center;
+      margin-bottom: 3rem;
+      background: linear-gradient(180deg, var(--text) 0%, rgba(240,236,227,0.35) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 30px var(--gold-dim));
+    }
+    [data-theme="light"] .footer-heading {
+      background: linear-gradient(180deg, var(--text) 0%, rgba(26,23,20,0.3) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .footer-pills {
+      display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 100%;
+    }
+    .footer-pill-row {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.875rem;
+    }
+    .glass-pill {
+      display: inline-flex; align-items: center; gap: 0.625rem;
+      padding: 0.9rem 2rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.9rem; font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: inherit;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.15s;
+    }
+    .glass-pill:hover {
+      background: var(--gold-dim);
+      border-color: var(--gold);
+      box-shadow: 0 8px 32px var(--gold-dim);
+      transform: translateY(-2px);
+    }
+    .glass-pill-sm {
+      padding: 0.6rem 1.25rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .glass-pill-sm:hover { color: var(--text); }
+
+    /* Footer bottom bar */
+    .footer-bar {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.5rem 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .footer-copy {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .footer-love {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .heart {
+      display: inline-flex;
+      align-items: center;
+      width: 14px; height: 14px;
+      color: #e64d4d;
+      animation: heartbeat 2s ease-in-out infinite;
+    }
+    .heart svg { width: 100%; height: 100%; display: block; }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15%, 45%  { transform: scale(1.3); }
+      30%       { transform: scale(1); }
+    }
+    #backToTop {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-family: inherit;
+      transition: background 0.25s, border-color 0.25s, color 0.25s, transform 0.15s;
+    }
+    #backToTop:hover { color: var(--text); transform: translateY(-2px); }
+    #backToTop svg { width: 16px; height: 16px; }
+
+    /* ── Animations ─────────────────────────────────────────── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { opacity: 0; animation: fade-up 0.7s ease-out forwards; }
+    .fade-in-1 { animation-delay: 0.1s; }
+    .fade-in-2 { animation-delay: 0.25s; }
+    .fade-in-3 { animation-delay: 0.4s; }
+    .fade-in-4 { animation-delay: 0.55s; }
+    .fade-in-5 { animation-delay: 0.7s; }
+
+    /* ── Accessibility ──────────────────────────────────────── */
+    :focus { outline: none; }
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+    .nav-link:focus-visible,
+    .book-btn:focus-visible,
+    .glass-pill:focus-visible,
+    .orb-node:focus-visible { outline-offset: 5px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .orb-center, .badge-pulse, .footer-aurora, .heart { animation: none !important; }
+    }
+
+    /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+      .scroll-section { height: 60rem; padding: 5rem 1.5rem; }
+      #scrollCard { height: 32rem; max-width: 720px; }
+      #scrollHeader { margin-bottom: 2.5rem; }
+    }
+    @media (max-width: 700px) {
+      body > nav { padding: 0 1.25rem; height: 60px; grid-template-columns: 1fr auto; }
+      .nav-links { display: none; }
+      .nav-cta-mobile { display: inline-flex; align-items: center; }
+      .nav-right { gap: 0.625rem; }
+      .hero { padding: 5rem 1.25rem 3rem; min-height: 100vh; min-height: 100dvh; }
+      .hero-eyebrow { font-size: 0.625rem; margin-bottom: 1.25rem; letter-spacing: 0.22em; }
+      .hero-headline { font-size: clamp(3rem, 11vw, 4.5rem); margin-bottom: 1.5rem; }
+      .hero-body { font-size: 0.9375rem; margin-bottom: 2rem; }
+      .hero-glow { width: 400px; height: 400px; }
+      .orbital-wrap { width: 340px; height: 340px; margin: 3rem auto 0; transform: translateY(4rem); }
+      .orb-dot { width: 44px; height: 44px; font-size: 0.95rem; }
+      .orb-label { font-size: 0.6rem; letter-spacing: 0.08em; }
+      .orb-center { width: 72px; height: 72px; font-size: 1rem; }
+      .features-section { padding: 4rem 1.25rem; }
+      .features-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.625rem; }
+      .feat-card { padding: 1.25rem 1rem; }
+      .feat-title { font-size: 0.95rem; }
+      .feat-desc { font-size: 0.8125rem; }
+      .scroll-section { padding: 4rem 1.25rem; height: 46rem; }
+      #scrollCard { height: 27rem; border-radius: 22px; border-width: 1.5px; }
+      .scroll-card-perspective { transform: scale(0.92); transform-origin: 50% 0%; }
+      .scroll-heading { font-size: clamp(2rem, 8vw, 2.75rem); }
+      #scrollHeader { margin-bottom: 2rem; }
+      /* Dashboard mockup internals */
+      .dash-topbar { padding: 0.75rem 0.875rem; }
+      .dash-title { font-size: 0.78rem; }
+      .dash-period { font-size: 0.58rem; padding: 0.2rem 0.55rem; }
+      .dash-kpis { padding: 0.625rem 0.875rem; gap: 0.5rem; }
+      .kpi-card { padding: 0.55rem 0.625rem; border-radius: 9px; }
+      .kpi-label { font-size: 0.5rem; letter-spacing: 0.06em; margin-bottom: 0.2rem; }
+      .kpi-val { font-size: 1rem; }
+      .kpi-delta { font-size: 0.52rem; margin-top: 0.15rem; }
+      .dash-chart-wrap { padding: 0 0.875rem; gap: 0.5rem; }
+      .dash-chart { padding: 0.55rem 0.75rem; border-radius: 9px; }
+      .chart-header { flex-direction: column; align-items: flex-start; gap: 0.3rem; margin-bottom: 0.35rem; }
+      .chart-lbl { font-size: 0.5rem; }
+      .leg-item { font-size: 0.5rem; }
+      .feed-item { font-size: 0.6rem; padding: 0.4rem 0.625rem; gap: 7px; }
+      .dash-sidebar { width: 140px; min-width: 140px; padding-bottom: 0.75rem; }
+      .dash-brand { padding: 0.85rem; gap: 8px; }
+      .dash-orb { width: 20px; height: 20px; }
+      .dash-brand-name { font-size: 0.7rem; }
+      .dash-badge { margin: 0.65rem 0.65rem 0.4rem; padding: 0.35rem 0.55rem; font-size: 0.58rem; }
+      .dash-nav { padding: 0 0.35rem; }
+      .dash-item { padding: 0.4rem 0.55rem; font-size: 0.7rem; gap: 8px; }
+      .dash-icon { width: 12px; height: 12px; }
+      .dash-item.active::before { left: -0.35rem; height: 14px; }
+      .footer-heading { font-size: clamp(2.5rem, 14vw, 5rem); }
+      .footer-bar { flex-direction: column; gap: 1rem; padding: 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .hero { padding: 4.5rem 1rem 2.5rem; min-height: 100vh; min-height: 100dvh; }
+      .nav-cta-mobile { padding: 0.4rem 0.75rem; font-size: 0.625rem; letter-spacing: 0.06em; }
+      .hero-headline { font-size: clamp(2.5rem, 12vw, 3.5rem); }
+      .hero-body { font-size: 0.875rem; }
+      .hero-glow { width: 320px; height: 320px; }
+      .orbital-wrap { width: 280px; height: 280px; margin: 2.5rem auto 0; transform: translateY(3rem); }
+      .orb-dot { width: 40px; height: 40px; font-size: 0.9rem; }
+      .orb-label { font-size: 0.55rem; }
+      .orb-center { width: 60px; height: 60px; font-size: 0.9rem; }
+      .features-section, .scroll-section { padding: 3rem 1rem; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+      .feat-card { padding: 1rem 0.875rem; }
+      .scroll-section { height: 42rem; }
+      #scrollCard { height: 24rem; border-radius: 18px; }
+      .scroll-card-perspective { transform: scale(0.88); }
+      .scroll-heading { font-size: clamp(1.75rem, 8vw, 2.25rem); }
+      #scrollHeader { margin-bottom: 1.5rem; }
+      .dash-topbar { padding: 0.6rem 0.75rem; }
+      .dash-title { font-size: 0.7rem; }
+      .dash-period { font-size: 0.5rem; padding: 0.15rem 0.45rem; }
+      .dash-kpis { padding: 0.5rem 0.75rem; gap: 0.4rem; }
+      .kpi-card { padding: 0.45rem 0.55rem; border-radius: 8px; }
+      .kpi-label { font-size: 0.42rem; }
+      .kpi-val { font-size: 0.85rem; }
+      .kpi-delta { font-size: 0.45rem; }
+      .dash-chart-wrap { padding: 0 0.75rem; gap: 0.4rem; }
+      .dash-chart { padding: 0.45rem 0.625rem; }
+      .chart-lbl { font-size: 0.45rem; }
+      .chart-legend { display: none; } /* Hide legend on tiny phones */
+      .feed-item { font-size: 0.55rem; padding: 0.35rem 0.55rem; }
+      .dash-sidebar { width: 56px; min-width: 56px; }
+      .dash-brand { padding: 0.75rem; justify-content: center; }
+      .dash-brand-name { display: none; }
+      .dash-badge { justify-content: center; padding: 0.35rem; margin: 0.5rem 0.4rem; }
+      .badge-label { display: none; }
+      .dash-nav { padding: 0 0.25rem; }
+      .dash-item { justify-content: center; padding: 0.5rem 0; font-size: 0; gap: 0; }
+      .dash-icon { width: 14px; height: 14px; }
+      .dash-item.active::before { left: -0.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Curtain transition overlay -->
+<div id="curtain"></div>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="/logo.png" alt="PLUTUS" onerror="this.style.display='none'">
+    <span class="nav-logo-text">PLUTUS</span>
+  </a>
+  <ul class="nav-links">
+    <li>
+      <a href="/gallary" class="nav-link">
+        <span class="nav-link-inner"><span>Our Work</span><span>Our Work</span></span>
+      </a>
+    </li>
+    <li>
+      <a href="#about" class="nav-link">
+        <span class="nav-link-inner"><span>About</span><span>About</span></span>
+      </a>
+    </li>
+    <li>
+      <a href="https://www.instagram.com/plutus.iq" target="_blank" rel="noopener" class="nav-link nav-link-gold">
+        <span class="nav-link-inner"><span>Follow Us</span><span>Follow Us</span></span>
+      </a>
+    </li>
+  </ul>
+  <div class="nav-right">
+    <a href="/gallary" class="nav-cta-mobile">Our Work</a>
+    <button id="themeToggle" aria-label="Toggle theme" aria-pressed="false"></button>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <p class="hero-eyebrow fade-in fade-in-1">AI · MARKETING · MEDIA</p>
+  <h1 class="hero-headline fade-in fade-in-2">
+    <span class="solid">MARKETING</span>
+    <span class="outline">WITH IMPACT</span>
+  </h1>
+  <p class="hero-body fade-in fade-in-3">
+    We harness AI to build marketing that moves culture, captures attention, and converts intent into growth.
+  </p>
+  <a href="https://wa.me/message/N7VTIAPAMOWWJ1" target="_blank" rel="noopener" class="book-btn fade-in fade-in-4">
+    <span class="book-btn-icon" aria-hidden="true">
+      <svg class="icon-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.05 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
+      <svg class="icon-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.05 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
+    </span>
+    <span class="book-btn-text">Book A Call</span>
+  </a>
+
+  <!-- Orbital diagram -->
+  <div class="orbital-wrap fade-in fade-in-5" id="orbitalWrap">
+    <svg class="orbital-svg" viewBox="0 0 440 440" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="220" cy="220" r="176" stroke="rgba(212,160,23,0.16)" stroke-width="1" stroke-dasharray="3 9"/>
+      <line id="obl-0" stroke="rgba(212,160,23,0.18)" stroke-width="1"/>
+      <line id="obl-1" stroke="rgba(212,160,23,0.18)" stroke-width="1"/>
+      <line id="obl-2" stroke="rgba(212,160,23,0.18)" stroke-width="1"/>
+      <line id="obl-3" stroke="rgba(212,160,23,0.18)" stroke-width="1"/>
+      <line id="obl-4" stroke="rgba(212,160,23,0.18)" stroke-width="1"/>
+    </svg>
+    <div class="orb-center" aria-hidden="true"><img src="/logo.png" alt=""></div>
+    <div class="orb-node" id="orb-0" role="button" tabindex="0" aria-label="Arche, our strategy practice"><div class="orb-dot">⚡</div><span class="orb-label">ARCHE</span></div>
+    <div class="orb-node" id="orb-1" role="button" tabindex="0" aria-label="Atelier, our identity practice"><div class="orb-dot">✦</div><span class="orb-label">ATELIER</span></div>
+    <div class="orb-node" id="orb-2" role="button" tabindex="0" aria-label="Forge, our creative practice"><div class="orb-dot">◉</div><span class="orb-label">FORGE</span></div>
+    <div class="orb-node" id="orb-3" role="button" tabindex="0" aria-label="Stage, our production practice"><div class="orb-dot">◈</div><span class="orb-label">STAGE</span></div>
+    <div class="orb-node" id="orb-4" role="button" tabindex="0" aria-label="Velocity, our performance practice"><div class="orb-dot">⬡</div><span class="orb-label">VELOCITY</span></div>
+
+    <!-- Info card -->
+    <div class="orb-card" id="orbCard" role="dialog" aria-modal="false" aria-labelledby="orbCardTitle">
+      <button class="orb-card-close" id="orbCardClose" aria-label="Close">×</button>
+      <span class="orb-card-cat" id="orbCardCat"></span>
+      <h3 class="orb-card-title" id="orbCardTitle"></h3>
+      <p class="orb-card-desc" id="orbCardDesc"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section class="features" id="about">
+  <div class="features-header">
+    <p class="features-eyebrow">Disciplines</p>
+    <h2 class="features-heading">Five teams, one agency.</h2>
+    <p class="features-sub">Strategy, identity, creative, production, and performance. Integrated by default, not coordinated across vendors.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <h3 class="feat-title">Strategy & Positioning</h3>
+      <p class="feat-desc">Brand audits, positioning sprints, naming, and category strategy that earns the brief.</p>
+    </div>
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      <h3 class="feat-title">Web & App Development</h3>
+      <p class="feat-desc">Marketing sites, web apps, and mobile experiences built to ship fast and scale clean.</p>
+    </div>
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <h3 class="feat-title">Campaign Creative</h3>
+      <p class="feat-desc">Platforms, scripts, art direction, copy. Ideas with legs, written by people who can finish them.</p>
+    </div>
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <h3 class="feat-title">Film & Production</h3>
+      <p class="feat-desc">In-house directors, DPs, edit, color, and mix. We don't subcontract the craft.</p>
+    </div>
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <h3 class="feat-title">Content Engineering</h3>
+      <p class="feat-desc">Always-on content systems with AI-accelerated variants and human-directed taste.</p>
+    </div>
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      <h3 class="feat-title">Performance Media</h3>
+      <p class="feat-desc">Paid media and distribution with the creative team in the room. Spend follows the work.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Scroll Animation Section ── -->
+<section class="scroll-section">
+  <div class="scroll-inner">
+    <div id="scrollHeader">
+      <p class="scroll-eyebrow">The Workbench</p>
+      <h2 class="scroll-heading">Every campaign,<span>UNDER ONE CONSOLE.</span></h2>
+    </div>
+    <div class="scroll-card-perspective">
+      <div id="scrollCard">
+        <div class="dash-inner">
+          <aside class="dash-sidebar">
+            <div class="dash-brand">
+              <img class="dash-orb" src="logo.png" alt="Plutus logo" />
+              <span class="dash-brand-name">PLUTUS</span>
+            </div>
+            <div class="dash-badge">
+              <span class="badge-pulse"></span><span class="badge-label">AI Assist</span>
+            </div>
+            <nav class="dash-nav" aria-label="Dashboard navigation">
+              <div class="dash-item">
+                <svg class="dash-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Overview
+              </div>
+              <div class="dash-item active">
+                <svg class="dash-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Campaigns
+              </div>
+              <div class="dash-item">
+                <svg class="dash-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18"/><path d="M3 12h18"/></svg>
+                Creative
+              </div>
+              <div class="dash-item">
+                <svg class="dash-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                Media
+              </div>
+              <div class="dash-item">
+                <svg class="dash-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+                Reports
+              </div>
+            </nav>
+          </aside>
+          <main class="dash-main">
+            <div class="dash-topbar">
+              <span class="dash-title">Campaign Performance</span>
+              <span class="dash-period" id="dashPeriod"></span>
+            </div>
+            <div class="dash-kpis">
+              <div class="kpi-card">
+                <div class="kpi-label">Impressions</div>
+                <div class="kpi-val">4.2M</div>
+                <div class="kpi-delta up">↑ 24% this month</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Conversion</div>
+                <div class="kpi-val">9.1%</div>
+                <div class="kpi-delta up">↑ 12% vs last</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Creative Tested</div>
+                <div class="kpi-val">142</div>
+                <div class="kpi-delta gold">variants this cycle</div>
+              </div>
+            </div>
+            <div class="dash-chart-wrap">
+              <div class="dash-chart">
+                <div class="chart-header">
+                  <div class="chart-lbl">Reach Across Channels</div>
+                  <div class="chart-legend">
+                    <span class="leg-item"><span class="leg-swatch s1"></span>Paid Social</span>
+                    <span class="leg-item"><span class="leg-swatch s2"></span>Search</span>
+                    <span class="leg-item"><span class="leg-swatch s3"></span>Programmatic</span>
+                  </div>
+                </div>
+                <svg viewBox="0 0 440 56" fill="none" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#d4a017" stop-opacity="0.42"/>
+                      <stop offset="100%" stop-color="#d4a017" stop-opacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#d4a017" stop-opacity="0.18"/>
+                      <stop offset="100%" stop-color="#d4a017" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Programmatic (baseline) -->
+                  <path d="M0,50 C60,49 120,48 180,46 S280,44 340,42 S400,40 440,39 L440,56 L0,56 Z" fill="url(#cg2)"/>
+                  <path d="M0,50 C60,49 120,48 180,46 S280,44 340,42 S400,40 440,39" stroke="rgba(212,160,23,0.4)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                  <!-- Search (mid) -->
+                  <path d="M0,42 C50,40 100,36 150,33 S240,28 290,26 S380,22 440,20 L440,56 L0,56 Z" fill="url(#cg2)"/>
+                  <path d="M0,42 C50,40 100,36 150,33 S240,28 290,26 S380,22 440,20" stroke="rgba(212,160,23,0.6)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                  <!-- Paid Social (top, primary) -->
+                  <path d="M0,38 C40,35 80,28 120,24 S200,16 240,12 S320,8 360,6 S420,4 440,3 L440,56 L0,56 Z" fill="url(#cg1)"/>
+                  <path d="M0,38 C40,35 80,28 120,24 S200,16 240,12 S320,8 360,6 S420,4 440,3" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+              </div>
+              <div class="dash-feed">
+                <div class="feed-item">
+                  <span class="feed-dot" style="background:#d4a017"></span>
+                  Hero film cut V4 approved, distribution queued for Friday
+                </div>
+                <div class="feed-item">
+                  <span class="feed-dot" style="background:#4ade80"></span>
+                  Paid social cohort A outperforming control by 18%, budget shifted
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer (Cinematic reveal) ── -->
+<div class="footer-reveal">
+  <footer>
+    <div class="footer-grid-bg"></div>
+    <div class="footer-aurora"></div>
+    <div class="footer-giant-text" aria-hidden="true">PLUTUS</div>
+
+    <!-- Center content -->
+    <div class="footer-center">
+      <h2 class="footer-heading">Let's make<br>something.</h2>
+      <div class="footer-pills">
+        <div class="footer-pill-row">
+          <a href="https://wa.me/message/N7VTIAPAMOWWJ1" target="_blank" rel="noopener" class="glass-pill">Start a Project</a>
+          <a href="#about" class="glass-pill">View Capabilities</a>
+        </div>
+        <div class="footer-pill-row">
+          <a href="/" class="glass-pill glass-pill-sm">Home</a>
+          <a href="/gallary" class="glass-pill glass-pill-sm">Gallary</a>
+          <a href="https://www.instagram.com/plutus.iq" target="_blank" rel="noopener" class="glass-pill glass-pill-sm">Instagram</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bar">
+      <span class="footer-copy">© 2026 PLUTUS Studio. All rights reserved.</span>
+      <div class="footer-love">
+        Crafted with
+        <span class="heart" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </span>
+        by PLUTUS
+      </div>
+      <button id="backToTop" aria-label="Back to top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+      </button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Theme Toggle (Curtain animation) ──────────────────────────
+  const DURATION = 550;
+  const EASING   = 'cubic-bezier(0.76, 0, 0.24, 1)';
+  const html     = document.documentElement;
+  const curtain  = document.getElementById('curtain');
+  const btn      = document.getElementById('themeToggle');
+  let animating  = false;
+
+  const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  const SUN  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+
+  function isDark() { return html.getAttribute('data-theme') === 'dark'; }
+  function updateIcon() { btn.innerHTML = isDark() ? MOON : SUN; }
+
+  btn.addEventListener('click', function () {
+    if (animating) return;
+    animating = true;
+    const next   = isDark() ? 'light' : 'dark';
+    const nextBg = next === 'dark' ? '#0c0a07' : '#f3ede1';
+
+    curtain.style.background      = nextBg;
+    curtain.style.transformOrigin = 'top';
+    curtain.style.transition      = 'transform ' + DURATION + 'ms ' + EASING;
+    curtain.style.transform       = 'scaleY(1)';
+
+    setTimeout(function () {
+      html.setAttribute('data-theme', next);
+      updateIcon();
+      curtain.style.transform = 'scaleY(0)';
+      setTimeout(function () {
+        curtain.style.transition = 'none';
+        animating = false;
+      }, DURATION + 80);
+    }, DURATION);
+  });
+  updateIcon();
+
+  // ── Orbital diagram (auto-rotation + click to expand) ────────
+  var orbAngle = 0;
+  var nodes    = [0,1,2,3,4].map(function(i){ return document.getElementById('orb-' + i); });
+  var lines    = [0,1,2,3,4].map(function(i){ return document.getElementById('obl-' + i); });
+  var CX = 220, CY = 220; // SVG viewBox is 440x440, lines use viewBox coords (scale with wrapper)
+  var orbWrap  = document.getElementById('orbitalWrap');
+  function currentRadius() {
+    // Match the wrapper's actual rendered size so DOM nodes sit at the same proportional radius as the SVG circle (40% of width).
+    var w = orbWrap ? orbWrap.offsetWidth : 440;
+    return w * 0.4;
+  }
+  var orbCard  = document.getElementById('orbCard');
+  var orbCat   = document.getElementById('orbCardCat');
+  var orbTitle = document.getElementById('orbCardTitle');
+  var orbDesc  = document.getElementById('orbCardDesc');
+  var orbClose = document.getElementById('orbCardClose');
+  var activeOrb = null;
+
+  var ORB_DATA = [
+    { cat: 'Strategy',    title: 'ARCHE',    desc: 'Positioning, brand architecture, naming, and category strategy. We start with the question, not the deck.' },
+    { cat: 'Identity',    title: 'ATELIER',  desc: 'Wordmarks, type, motion identity, and packaging. Systems that scale across every surface without flattening.' },
+    { cat: 'Creative',    title: 'FORGE',    desc: 'Campaign platforms, art direction, scripts, copy. Concepts engineered to last a season, not a sprint.' },
+    { cat: 'Production',  title: 'STAGE',    desc: 'Film, photo, CGI, motion, post. A full production stack in-house: directors, DPs, edit, color, mix.' },
+    { cat: 'Performance', title: 'VELOCITY', desc: 'Paid media, distribution, lifecycle, attribution. Where craft meets the spend.' }
+  ];
+
+  function updateOrbital() {
+    if (activeOrb === null) {
+      orbAngle = (orbAngle + 0.3) % 360;
+    }
+    var R = currentRadius();
+    nodes.forEach(function (node, i) {
+      if (!node) return;
+      var deg = ((i / 5) * 360 + orbAngle) % 360;
+      var rad = deg * Math.PI / 180;
+      var x   = R * Math.cos(rad);
+      var y   = R * Math.sin(rad);
+      node.style.transform = 'translate(calc(-50% + ' + x.toFixed(1) + 'px), calc(-50% + ' + y.toFixed(1) + 'px))';
+      if (activeOrb === i)        node.style.opacity = '1';
+      else if (activeOrb !== null) node.style.opacity = '0.28';
+      else {
+        var op = Math.max(0.45, Math.min(1, 0.45 + 0.55 * ((1 + Math.sin(rad)) / 2)));
+        node.style.opacity = op.toFixed(3);
+      }
+      if (lines[i]) {
+        lines[i].setAttribute('x1', CX);
+        lines[i].setAttribute('y1', CY);
+        lines[i].setAttribute('x2', (CX + x).toFixed(1));
+        lines[i].setAttribute('y2', (CY + y).toFixed(1));
+        lines[i].style.opacity = activeOrb !== null && activeOrb !== i ? '0.25' : '1';
+      }
+    });
+  }
+  if (!prefersReduced) setInterval(updateOrbital, 50);
+  updateOrbital();
+  window.addEventListener('resize', updateOrbital, { passive: true });
+
+  function openOrbCard(i) {
+    activeOrb = i;
+    var d = ORB_DATA[i];
+    orbCat.textContent   = d.cat;
+    orbTitle.textContent = d.title;
+    orbDesc.textContent  = d.desc;
+    orbCard.classList.add('show');
+    orbWrap.classList.add('card-open');
+    nodes.forEach(function (n, idx) { n.classList.toggle('active', idx === i); });
+  }
+  function closeOrbCard() {
+    activeOrb = null;
+    orbCard.classList.remove('show');
+    orbWrap.classList.remove('card-open');
+    nodes.forEach(function (n) { n.classList.remove('active'); });
+  }
+  nodes.forEach(function (node, i) {
+    if (!node) return;
+    node.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (activeOrb === i) closeOrbCard();
+      else openOrbCard(i);
+    });
+    node.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (activeOrb === i) closeOrbCard();
+        else openOrbCard(i);
+      }
+    });
+  });
+  orbClose.addEventListener('click', function (e) { e.stopPropagation(); closeOrbCard(); });
+  orbCard.addEventListener('click', function (e) { e.stopPropagation(); });
+  document.addEventListener('click', function (e) {
+    if (activeOrb !== null && orbWrap && !orbWrap.contains(e.target)) closeOrbCard();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && activeOrb !== null) closeOrbCard();
+  });
+
+  // ── Scroll animation (3D card) ───────────────────────────────
+  var card    = document.getElementById('scrollCard');
+  var hdr     = document.getElementById('scrollHeader');
+  var section = card ? card.closest('.scroll-section') : null;
+
+  if (card && section) {
+    function getProgress() {
+      var r  = section.getBoundingClientRect();
+      var h  = section.offsetHeight;
+      var vh = window.innerHeight;
+      return Math.max(0, Math.min(1, (vh - r.top) / (vh + h)));
+    }
+    function updateScroll() {
+      var p       = getProgress();
+      var rotateX = 20 * (1 - p);
+      var scale   = 1.05 - 0.05 * p;
+      var ty      = -100 * p;
+      card.style.transform = 'rotateX(' + rotateX.toFixed(3) + 'deg) scale(' + scale.toFixed(4) + ')';
+      hdr.style.transform  = 'translateY(' + ty.toFixed(1) + 'px)';
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    window.addEventListener('resize', updateScroll, { passive: true });
+    updateScroll();
+  }
+
+  // ── Dashboard date ───────────────────────────────────────────
+  var dashPeriod = document.getElementById('dashPeriod');
+  if (dashPeriod) {
+    dashPeriod.textContent = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }
+
+  // ── Back to top ───────────────────────────────────────────────
+  var btt = document.getElementById('backToTop');
+  if (btt) btt.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+  // ── Nav scroll: elevate on scroll ────────────────────────────
+  var nav = document.querySelector('nav');
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 20) {
+      nav.style.borderBottomColor = 'var(--border)';
+    } else {
+      nav.style.borderBottomColor = 'transparent';
+    }
+  }, { passive: true });
+
+})();
+</script>
+</body>
+</html>

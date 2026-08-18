@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+:root {
+  --navy: #050505;
+  --navy-light: #0d0d0d;
+  --navy-mid: #141414;
+  --navy-surface: #0a0a0a;
+  --ink: #000000;
+  --gold: #d4a017;
+  --gold-dim: #b8860b;
+  --gold-glow: rgba(212, 160, 23, 0.18);
+  --gold-border: rgba(212, 160, 23, 0.3);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-hover: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-border-strong: rgba(255, 255, 255, 0.12);
+  --text-primary: rgba(245, 240, 225, 0.95);
+  --text-secondary: rgba(245, 240, 225, 0.55);
+  --text-muted: rgba(245, 240, 225, 0.3);
+  --blur-amount: 20px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--navy);
+  background-image:
+    radial-gradient(rgba(245, 240, 225, 0.035) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: 0 0;
+  color: var(--text-primary);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 768px) {
+  html, body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  border: 1px solid var(--glass-border);
+}
+
+.glass-strong {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border-strong);
+}
+
+.glass-gold {
+  background: rgba(212,160,23,0.06);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  border: 1px solid var(--gold-border);
+}
+
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+
+.data-table th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--glass-border);
+  white-space: nowrap;
+  text-align: left;
+}
+
+.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr { transition: background 0.15s ease-out; }
+.data-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+/* Inputs */
+input, select, textarea {
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  color: var(--text-primary);
+}
+
+/* Focus ring — applied by :focus-visible so raw clicks don't show it */
+:focus-visible {
+  outline: 2px solid rgba(212,160,23,0.5);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Suppress outline on elements that manage their own focus style */
+.focus-self:focus { outline: none; }
+
+::selection { background: rgba(212,160,23,0.25); color: #fff; }
+
+.recharts-tooltip-wrapper { outline: none !important; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.gold-ring {
+  box-shadow: 0 0 0 1px var(--gold-border), 0 0 24px var(--gold-glow);
+}
+
+/* Respect reduced-motion system preference: flatten all Framer Motion + CSS transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
